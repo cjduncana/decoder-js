@@ -1,3 +1,13 @@
 {
-  "extends": ["tslint:recommended", "tslint-config-prettier"]
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "rules": {
+    "indent": [true, "spaces", 2],
+    "linebreak-style": [true, "LF"],
+    "max-line-length": [true, 120],
+    "no-trailing-whitespace": true,
+    "quotemark": [true, "single", "jsx-double"],
+    "semicolon": [true, "always"],
+    "trailing-comma": [true, { "multiline": "always", "singleline": "never" }],
+    "whitespace": [true, "check-module"]
+  }
 }
