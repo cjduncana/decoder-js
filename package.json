@@ -1,7 +1,7 @@
 {
-  "name": "json-decoder",
+  "name": "decoder-js",
   "version": "1.0.0",
-  "description": "Helps you transform JSON values into Typescript values",
+  "description": "Turn arbitrary JavaScript values into valid TypeScript values",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -18,19 +18,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cjduncana/json-decoder.git"
+    "url": "git+https://github.com/cjduncana/decoder-js.git"
   },
   "keywords": [
     "decoder",
-    "typescript",
-    "json"
+    "typescript"
   ],
   "author": "Christopher Duncan <cj.duncan.a@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cjduncana/json-decoder/issues"
+    "url": "https://github.com/cjduncana/decoder-js/issues"
   },
-  "homepage": "https://github.com/cjduncana/json-decoder#readme",
+  "homepage": "https://github.com/cjduncana/decoder-js#readme",
   "devDependencies": {
     "@types/jest": "^23.3.2",
     "jest": "^23.6.0",

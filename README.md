@@ -1,3 +1,3 @@
-# JSON Decoder
+# Decoder.js
 
-Helps you transform JSON values into Typescript values
+Turn arbitrary JavaScript values into valid TypeScript values
