@@ -19,7 +19,11 @@
     "type": "git",
     "url": "git+https://github.com/cjduncana/json-decoder.git"
   },
-  "keywords": ["decoder", "typescript", "json"],
+  "keywords": [
+    "decoder",
+    "typescript",
+    "json"
+  ],
   "author": "Christopher Duncan <cj.duncan.a@gmail.com>",
   "license": "MIT",
   "bugs": {
