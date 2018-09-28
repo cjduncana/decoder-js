@@ -247,7 +247,7 @@ describe('Map2 Decoder', () => {
   });
 });
 
-describe('Map2 Decoder', () => {
+describe('Map3 Decoder', () => {
 
   interface IPerson { name: string; height: number; isAdult: boolean; }
 
