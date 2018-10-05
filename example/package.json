@@ -1,0 +1,17 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "Example code for Decoder.js",
+  "main": "index.ts",
+  "author": "Christopher Duncan <cj.duncan.a@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "decoder-js": "^1.0.0",
+    "fp-ts": "^1.9.0",
+    "typescript": "^3.1.1"
+  }
+}
