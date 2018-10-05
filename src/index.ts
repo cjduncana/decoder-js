@@ -100,10 +100,7 @@ class AndThenD<a, b> extends Decoder<b> {
   public run(value: unknown): Decoded<b> {
     return this.decoder
       .run(value)
-      .fold(
-        errors => ValidationFn.failure(errors),
-        success => this.decoderFn(success).run(value),
-      );
+      .fold(errors => ValidationFn.failure(errors), success => this.decoderFn(success).run(value));
   }
 }
 
@@ -256,10 +253,7 @@ class Map2D<a, b, c> extends Decoder<c> {
         successA =>
           decoderB
             .run(value)
-            .fold(
-              errorsB => ValidationFn.failure(errorsB),
-              successB => ValidationFn.success(fn(successA, successB)),
-            ),
+            .fold(errorsB => ValidationFn.failure(errorsB), successB => ValidationFn.success(fn(successA, successB))),
       );
   }
 }
