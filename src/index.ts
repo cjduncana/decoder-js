@@ -100,7 +100,7 @@ class AndThenD<a, b> extends Decoder<b> {
   public run(value: unknown): Decoded<b> {
     return this.decoder
       .run(value)
-      .fold(errors => ValidationFn.failure(errors), success => this.decoderFn(success).run(value));
+      .fold((errors) => ValidationFn.failure(errors), (success) => this.decoderFn(success).run(value));
   }
 }
 
@@ -118,15 +118,15 @@ class ArrayD<a> extends Decoder<a[]> {
         const validatedValue = this.decoder.run(nextValue);
 
         return validatedValue.fold(
-          errorsFromValue => {
-            const errors = errorsFromValue.map(errorText => `${errorText} at index #${indexN}`);
+          (errorsFromValue) => {
+            const errors = errorsFromValue.map((errorText) => `${errorText} at index #${indexN}`);
 
             return validated.fold(
-              errorsFromValidated => ValidationFn.failure(errorsFromValidated.concat(errors)),
+              (errorsFromValidated) => ValidationFn.failure(errorsFromValidated.concat(errors)),
               () => ValidationFn.failure(errors),
             );
           },
-          successFromValue => validated.map(successes => [...successes, successFromValue]),
+          (successFromValue) => validated.map((successes) => [...successes, successFromValue]),
         );
       }, ValidationFn.success([]));
     }
@@ -175,7 +175,7 @@ class FieldD<a> extends Decoder<a> {
       if (this.field in valueObject) {
         return this.decoder
           .run(valueObject[this.field])
-          .mapFailure(errors => errors.map(error => `${error} at key "${this.field}"`));
+          .mapFailure((errors) => errors.map((error) => `${error} at key "${this.field}"`));
       }
 
       const noFieldMsg = `Object missing value at key "${this.field}"`;
@@ -202,7 +202,7 @@ class IndexD<a> extends Decoder<a> {
       if (valueArray[this.indexN]) {
         return this.decoder
           .run(valueArray[this.indexN])
-          .mapFailure(errors => errors.map(error => `${error} at index #${this.indexN}`));
+          .mapFailure((errors) => errors.map((error) => `${error} at index #${this.indexN}`));
       }
 
       const noIndexMsg = `Array missing value at index #${this.indexN}`;
@@ -249,11 +249,14 @@ class Map2D<a, b, c> extends Decoder<c> {
     return decoderA
       .run(value)
       .fold(
-        errorsA => ValidationFn.failure(errorsA),
-        successA =>
+        (errorsA) => ValidationFn.failure(errorsA),
+        (successA) =>
           decoderB
             .run(value)
-            .fold(errorsB => ValidationFn.failure(errorsB), successB => ValidationFn.success(fn(successA, successB))),
+            .fold(
+              (errorsB) => ValidationFn.failure(errorsB),
+              (successB) => ValidationFn.success(fn(successA, successB)),
+            ),
       );
   }
 }
@@ -286,18 +289,18 @@ class Map3D<a, b, c, d> extends Decoder<d> {
     return decoderA
       .run(value)
       .fold(
-        errorsA => ValidationFn.failure(errorsA),
-        successA =>
+        (errorsA) => ValidationFn.failure(errorsA),
+        (successA) =>
           decoderB
             .run(value)
             .fold(
-              errorsB => ValidationFn.failure(errorsB),
-              successB =>
+              (errorsB) => ValidationFn.failure(errorsB),
+              (successB) =>
                 decoderC
                   .run(value)
                   .fold(
-                    errorsC => ValidationFn.failure(errorsC),
-                    successC => ValidationFn.success(fn(successA, successB, successC)),
+                    (errorsC) => ValidationFn.failure(errorsC),
+                    (successC) => ValidationFn.success(fn(successA, successB, successC)),
                   ),
             ),
       );
