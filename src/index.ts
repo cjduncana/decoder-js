@@ -242,22 +242,20 @@ class Map2D<a, b, c> extends Decoder<c> {
   }
 
   public run(value: unknown): Decoded<c> {
-    const decoderA = this.decoderA;
-    const decoderB = this.decoderB;
+    const decodedA = this.decoderA.run(value);
+    const decodedB = this.decoderB.run(value);
     const fn = this.fn;
 
-    return decoderA
-      .run(value)
-      .fold(
-        (errorsA) => ValidationFn.failure(errorsA),
-        (successA) =>
-          decoderB
-            .run(value)
-            .fold(
-              (errorsB) => ValidationFn.failure(errorsB),
-              (successB) => ValidationFn.success(fn(successA, successB)),
-            ),
-      );
+    return decodedA.fold(
+      (errorsA) => decodedB.fold(
+        (errorsB) => ValidationFn.failure(errorsA.concat(errorsB)),
+        () => ValidationFn.failure(errorsA),
+      ),
+      (successA) => decodedB.fold(
+        (errorsB) => ValidationFn.failure(errorsB),
+        (successB) => ValidationFn.success(fn(successA, successB)),
+      ),
+    );
   }
 }
 
@@ -281,29 +279,33 @@ class Map3D<a, b, c, d> extends Decoder<d> {
   }
 
   public run(value: unknown): Decoded<d> {
-    const decoderA = this.decoderA;
-    const decoderB = this.decoderB;
-    const decoderC = this.decoderC;
+    const decodedA = this.decoderA.run(value);
+    const decodedB = this.decoderB.run(value);
+    const decodedC = this.decoderC.run(value);
     const fn = this.fn;
 
-    return decoderA
-      .run(value)
-      .fold(
-        (errorsA) => ValidationFn.failure(errorsA),
-        (successA) =>
-          decoderB
-            .run(value)
-            .fold(
-              (errorsB) => ValidationFn.failure(errorsB),
-              (successB) =>
-                decoderC
-                  .run(value)
-                  .fold(
-                    (errorsC) => ValidationFn.failure(errorsC),
-                    (successC) => ValidationFn.success(fn(successA, successB, successC)),
-                  ),
-            ),
-      );
+    return decodedA.fold(
+      (errorsA) => decodedB.fold(
+        (errorsB) => decodedC.fold(
+          (errorsC) => ValidationFn.failure(errorsA.concat(errorsB).concat(errorsC)),
+          () => ValidationFn.failure(errorsA.concat(errorsB)),
+        ),
+        () => decodedC.fold(
+          (errorsC) => ValidationFn.failure(errorsA.concat(errorsC)),
+          () => ValidationFn.failure(errorsA),
+        ),
+      ),
+      (successA) => decodedB.fold(
+        (errorsB) => decodedC.fold(
+          (errorsC) => ValidationFn.failure(errorsB.concat(errorsC)),
+          () => ValidationFn.failure(errorsB),
+        ),
+        (successB) => decodedC.fold(
+          (errorsC) => ValidationFn.failure(errorsC),
+          (successC) => ValidationFn.success(fn(successA, successB, successC)),
+        ),
+      ),
+    );
   }
 }
 

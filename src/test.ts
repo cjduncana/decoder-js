@@ -251,6 +251,15 @@ describe('Map2 Decoder', () => {
     const failMsg = nonEmptyArray.of('Value must be a number, found "string" instead at key "y"');
     expect(pointT).toEqual(ValidationFn.failure(failMsg));
   });
+
+  it('should provide two failures messages if all decoders failed', () => {
+    const pointT = pointDecoder.run({ x: '2', y: '4' });
+    const failMsg = new NonEmptyArray(
+      'Value must be a number, found "string" instead at key "x"',
+      ['Value must be a number, found "string" instead at key "y"'],
+    );
+    expect(pointT).toEqual(ValidationFn.failure(failMsg));
+  });
 });
 
 describe('Map3 Decoder', () => {
@@ -266,7 +275,7 @@ describe('Map3 Decoder', () => {
 
   const personDecoder = Decoder.map3(
     person,
-    Decoder.at(['name'], Decoder.string()),
+    Decoder.field('name', Decoder.string()),
     Decoder.at(['info', 'height'], Decoder.number()),
     Decoder.at(['info', 'isAdult'], Decoder.boolean()),
   );
@@ -277,20 +286,59 @@ describe('Map3 Decoder', () => {
   });
 
   it('should fail if the first decoder failed', () => {
-    const personT = personDecoder.run({ height: 1.8, isAdult: true });
+    const personT = personDecoder.run({ info: { height: 1.8, isAdult: true } });
     const failMsg = nonEmptyArray.of('Object missing value at key "name"');
     expect(personT).toEqual(ValidationFn.failure(failMsg));
   });
 
   it('should fail if the second decoder failed', () => {
-    const personT = personDecoder.run({ name: 'Tester' });
-    const failMsg = nonEmptyArray.of('Object missing value at key "info"');
+    const personT = personDecoder.run({ name: 'Tester', info: { isAdult: true } });
+    const failMsg = nonEmptyArray.of('Object missing value at key "height" at key "info"');
     expect(personT).toEqual(ValidationFn.failure(failMsg));
   });
 
-  it('should fail if the second decoder failed', () => {
+  it('should fail if the third decoder failed', () => {
     const personT = personDecoder.run({ name: 'Tester', info: { height: 1.8 } });
     const failMsg = nonEmptyArray.of('Object missing value at key "isAdult" at key "info"');
+    expect(personT).toEqual(ValidationFn.failure(failMsg));
+  });
+
+  it('should provide two failures messages if the first and second decoders failed', () => {
+    const personT = personDecoder.run({ info: { isAdult: true } });
+    const failMsg = new NonEmptyArray(
+      'Object missing value at key "name"',
+      ['Object missing value at key "height" at key "info"'],
+    );
+    expect(personT).toEqual(ValidationFn.failure(failMsg));
+  });
+
+  it('should provide two failures messages if the first and third decoders failed', () => {
+    const personT = personDecoder.run({ info: { height: 1.8 } });
+    const failMsg = new NonEmptyArray(
+      'Object missing value at key "name"',
+      ['Object missing value at key "isAdult" at key "info"'],
+    );
+    expect(personT).toEqual(ValidationFn.failure(failMsg));
+  });
+
+  it('should provide two failures messages if the second and third decoders failed', () => {
+    const personT = personDecoder.run({ name: 'Tester', info: {} });
+    const failMsg = new NonEmptyArray(
+      'Object missing value at key "height" at key "info"',
+      ['Object missing value at key "isAdult" at key "info"'],
+    );
+    expect(personT).toEqual(ValidationFn.failure(failMsg));
+  });
+
+  it('should provide three failures messages if all decoders failed', () => {
+    const personT = personDecoder.run({ info: {} });
+    const failMsg = new NonEmptyArray(
+      'Object missing value at key "name"',
+      [
+        'Object missing value at key "height" at key "info"',
+        'Object missing value at key "isAdult" at key "info"',
+      ],
+    );
     expect(personT).toEqual(ValidationFn.failure(failMsg));
   });
 });
