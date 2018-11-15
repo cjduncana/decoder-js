@@ -52,6 +52,19 @@ export default class Decoder<a> {
     return new Map3D(fn, decoderA, decoderB, decoderC);
   }
 
+  public static nonEmptyArray<a>(decoder: Decoder<a>): Decoder<NonEmptyArray<a>> {
+    return Decoder.andThen(
+      ([head, ...tail]) => {
+        if (head) {
+          return Decoder.succeed(new NonEmptyArray(head, tail));
+        }
+
+        return Decoder.fail('Array must have at least one value');
+      },
+      Decoder.array(decoder),
+    );
+  }
+
   public static null<a>(value: a): Decoder<a> {
     return new NullD(value);
   }

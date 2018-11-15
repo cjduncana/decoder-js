@@ -343,6 +343,21 @@ describe('Map3 Decoder', () => {
   });
 });
 
+describe('NonEmptyArray', () => {
+
+  it('should succeed if given a boolean decoder and a non-empty array of booleans', () => {
+    const booleansResult = Decoder.nonEmptyArray(Decoder.boolean()).run([true]);
+    const booleans = nonEmptyArray.of(true);
+    expect(booleansResult).toEqual(ValidationFn.success(booleans));
+  });
+
+  it('should fail if given an empty array', () => {
+    const booleansResult = Decoder.nonEmptyArray(Decoder.boolean()).run([]);
+    const failMsg = nonEmptyArray.of('Array must have at least one value');
+    expect(booleansResult).toEqual(ValidationFn.failure(failMsg));
+  });
+});
+
 describe('Null Decoder', () => {
   it('should succeed if given a null value', () => {
     const booleanT = Decoder.null(true).run(null);
