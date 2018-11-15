@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "prebuild": "rm -rf lib",
     "build": "tsc",
     "coverage": "jest --coverage --config jestconfig.json",
     "lint": "tslint -p tsconfig.json",
