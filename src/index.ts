@@ -57,7 +57,12 @@ export default class Decoder<a> {
   }
 
   public static nullable<a>(decoder: Decoder<a>): Decoder<Option<a>> {
-    return new NullableD(decoder);
+    const decoders = new NonEmptyArray(
+      Decoder.null(OptionFn.none),
+      [Decoder.map<a, Option<a>>(OptionFn.some, decoder)],
+    );
+
+    return Decoder.oneOf(decoders);
   }
 
   public static number(): Decoder<number> {
@@ -324,23 +329,6 @@ class NullD<a> extends Decoder<a> {
 
     const message = `Value must be a null, found "${typeof value}" instead`;
     return ValidationFn.failure(nonEmptyArray.of(message));
-  }
-}
-
-class NullableD<a> extends Decoder<Option<a>> {
-  private decoder: Decoder<a>;
-
-  constructor(decoder: Decoder<a>) {
-    super();
-    this.decoder = decoder;
-  }
-
-  public run(maybeValue: unknown): Decoded<Option<a>> {
-    if (maybeValue === null) {
-      return ValidationFn.success(OptionFn.none);
-    }
-
-    return this.decoder.run(maybeValue).map(OptionFn.some);
   }
 }
 
