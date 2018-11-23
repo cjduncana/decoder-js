@@ -205,8 +205,6 @@ You could also use `oneOf` to help version your data. Try the latest format, the
 
 ## Mapping
 
-**Note**: If you run out of map functions, let me know as an issue to implement an API similar to [NoRedInk's JSON Decode Pipeline library][elm-decode-pipeline] which makes it easier to handle large objects, but produces lower quality type errors.
-
 ### Map: `((a) => b, Decoder<a>) => Decoder<b>`
 
 Transform a decoder. Maybe you just want to know an unsigned number:
@@ -293,6 +291,40 @@ personDecoder.run({ name: 'Tester', info: { height: 1.8, isAdult: true } });
 ```
 
 Like `map2`, it tries each decoder and then give the results to the `person` function. That can be any function though!
+
+### AndMap: `Decoder<a> => Decoder<a => b> => Decoder<b>`
+
+When you want to try more than three decoders, you can use `andMap` to partially decode a large function of arbitrary length.
+
+``` typescript
+import { Curried3, curry, pipe } from 'fp-ts/lib/function';
+import Decoder from 'decoder-js';
+
+interface IUser {
+  id: number;
+  username: string;
+  email: string;
+  isAdmin: boolean;
+}
+
+function user(id: number, username: string, email: string, isAdmin: boolean): IUser {
+  return { id, username, email, isAdmin };
+}
+
+type FirstDecoder = Curried3<string, string, boolean, IUser>;
+
+const userDecoder = pipe(
+  Decoder.andMap<number, FirstDecoder>(Decoder.field('id', Decoder.number())),
+  Decoder.andMap(Decoder.field('username', Decoder.string())),
+  Decoder.andMap(Decoder.field('email', Decoder.string())),
+  Decoder.andMap(Decoder.field('isAdmin', Decoder.boolean())),
+)(Decoder.succeed(curry(user)));
+
+userDecoder.run({ id: 0, username: 'username', email: 'email', isAdmin: true });
+// Success: IUser { id: 0, username: 'username', email: 'email', isAdmin: true }
+```
+
+**Note**: `andMap` is meant to be used with `succeed` and `fp-ts`'s `curry` and `pipe` functions.
 
 ## Fancy Decoding
 

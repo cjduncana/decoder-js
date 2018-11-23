@@ -1,3 +1,4 @@
+import { Curried3, curry, pipe } from 'fp-ts/lib/function';
 import { NonEmptyArray, nonEmptyArray } from 'fp-ts/lib/NonEmptyArray';
 import * as OptionFn from 'fp-ts/lib/Option';
 import * as ValidationFn from 'fp-ts/lib/Validation';
@@ -48,6 +49,47 @@ describe('AndThen Decoder', () => {
       const failMsg = nonEmptyArray.of('Value "Forward" is not a valid Direction: "Up", "Down", "Left", "Right"');
       expect(directionT).toEqual(ValidationFn.failure(failMsg));
     });
+  });
+});
+
+describe('AndMap Decoder', () => {
+
+  interface IUser {
+    id: number;
+    username: string;
+    email: string;
+    isAdmin: boolean;
+  }
+
+  function user(id: number, username: string, email: string, isAdmin: boolean): IUser {
+    return { id, username, email, isAdmin };
+  }
+
+  type FirstDecoder = Curried3<string, string, boolean, IUser>;
+
+  const userDecoder = pipe(
+    Decoder.andMap<number, FirstDecoder>(Decoder.field('id', Decoder.number())),
+    Decoder.andMap(Decoder.field('username', Decoder.string())),
+    Decoder.andMap(Decoder.field('email', Decoder.string())),
+    Decoder.andMap(Decoder.field('isAdmin', Decoder.boolean())),
+  )(Decoder.succeed(curry(user)));
+
+  it('should succeed if all decoders succeeded', () => {
+    const userT = userDecoder.run({ id: 0, username: 'username', email: 'email', isAdmin: true });
+    expect(userT).toEqual(ValidationFn.success({ id: 0, username: 'username', email: 'email', isAdmin: true }));
+  });
+
+  it('should provide four failures messages if all decoders failed', () => {
+    const personT = userDecoder.run({});
+    const failMsg = new NonEmptyArray(
+      'Object missing value at key "isAdmin"',
+      [
+        'Object missing value at key "email"',
+        'Object missing value at key "username"',
+        'Object missing value at key "id"',
+      ],
+    );
+    expect(personT).toEqual(ValidationFn.failure(failMsg));
   });
 });
 

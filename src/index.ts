@@ -11,6 +11,12 @@ export default class Decoder<a> {
     return new AndThenD(decoderFn, decoder);
   }
 
+  public static andMap<a, b>(decoder: Decoder<a>) {
+    return (fnInDecoder: Decoder<(value: a) => b>): Decoder<b> => {
+      return Decoder.map2<a, (value: a) => b, b>(pipe, decoder, fnInDecoder);
+    };
+  }
+
   public static array<a>(decoder: Decoder<a>): Decoder<a[]> {
     return new ArrayD(decoder);
   }
@@ -417,4 +423,8 @@ function isArray(value: unknown): value is Array<unknown> {
 
 function isObject(value: unknown): value is { [prop: string]: unknown } {
   return typeof value === 'object';
+}
+
+function pipe<a, b>(value: a, fn: (value: a) => b): b {
+  return fn(value);
 }
