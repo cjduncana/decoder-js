@@ -523,6 +523,37 @@ describe('OneOf Decoder', () => {
   });
 });
 
+describe('Optional Field Decoder', () => {
+
+  describe('should succeed', () => {
+
+    it('with some if given an object with the given field', () => {
+      const booleanT = Decoder.optionalField('boolean', Decoder.boolean()).run({ boolean: true });
+      expect(booleanT).toEqual(ValidationFn.success(OptionFn.some(true)));
+    });
+
+    it('with none if given an object with missing key', () => {
+      const emptyT = Decoder.optionalField('boolean', Decoder.boolean()).run({});
+      expect(emptyT).toEqual(ValidationFn.success(OptionFn.none));
+    });
+  });
+
+  describe('should fail', () => {
+
+    it('if given an object with another value', () => {
+      const stringT = Decoder.optionalField('boolean', Decoder.boolean()).run({ boolean: 'true' });
+      const failMsg = nonEmptyArray.of('Value must be a boolean, found "string" instead at key "boolean"');
+      expect(stringT).toEqual(ValidationFn.failure(failMsg));
+    });
+
+    it('if given a boolean', () => {
+      const booleanT = Decoder.optionalField('boolean', Decoder.boolean()).run(true);
+      const failMsg = nonEmptyArray.of('Value must be an object, found "boolean" instead');
+      expect(booleanT).toEqual(ValidationFn.failure(failMsg));
+    });
+  });
+});
+
 describe('String Decoder', () => {
   it('should succeed if given a string', () => {
     const stringT = Decoder.string().run('string');

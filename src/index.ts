@@ -92,6 +92,10 @@ export default class Decoder<a> {
     return new OneOfD(decoders);
   }
 
+  public static optionalField<a>(key: string, decoder: Decoder<a>): Decoder<Option<a>> {
+    return new OptionalFieldD(key, decoder);
+  }
+
   public static string(): Decoder<string> {
     return new StringD();
   }
@@ -204,6 +208,32 @@ class FieldD<a> extends Decoder<a> {
 
       const noFieldMsg = `Object missing value at key "${this.field}"`;
       return ValidationFn.failure(nonEmptyArray.of(noFieldMsg));
+    }
+
+    const notObjectMsg = `Value must be an object, found "${typeof valueObject}" instead`;
+    return ValidationFn.failure(nonEmptyArray.of(notObjectMsg));
+  }
+}
+
+class OptionalFieldD<a> extends Decoder<Option<a>> {
+  private decoder: Decoder<a>;
+  private field: string;
+
+  constructor(field: string, decoder: Decoder<a>) {
+    super();
+    this.decoder = decoder;
+    this.field = field;
+  }
+
+  public run(valueObject: unknown): Decoded<Option<a>> {
+    if (isObject(valueObject)) {
+      if (this.field in valueObject) {
+        return Decoder.map<a, Option<a>>(OptionFn.some, this.decoder)
+          .run(valueObject[this.field])
+          .mapFailure((errors) => errors.map((error) => `${error} at key "${this.field}"`));
+      }
+
+      return ValidationFn.success(OptionFn.none);
     }
 
     const notObjectMsg = `Value must be an object, found "${typeof valueObject}" instead`;

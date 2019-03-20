@@ -139,6 +139,23 @@ The object can have other fields. Lots of them! The only thing this decoder care
 
 Check out `map2` to see how to decode multiple fields!
 
+### Optional Field: `(string, Decoder<a>) => Decoder<Option<a>>`
+
+Similar to `field`, but succeeds whether the value is present or not.
+
+``` typescript
+import Decoder from 'decoder-js';
+
+Decoder.optionalField('isAdult', Decoder.boolean()).run({ isAdult: true });
+// Success: Some(true)
+Decoder.optionalField('isAdult', Decoder.boolean()).run({ isAdult: true, licenseState: 'California' });
+// Success: Some(true)
+Decoder.optionalField('isAdult', Decoder.boolean()).run({ isAdult: 'true' });
+// Failure
+Decoder.optionalField('isAdult', Decoder.boolean()).run({ licenseState: 'Vermont' });
+// Success: None
+```
+
 ### At: `(string[], Decoder<a>) => Decoder<a>`
 
 Succeeds when an object contains nested fields.
