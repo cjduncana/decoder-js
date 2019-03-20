@@ -188,10 +188,10 @@ class FieldD<a> extends Decoder<a> {
   private decoder: Decoder<a>;
   private field: string;
 
-  constructor(fieldS: string, decoder: Decoder<a>) {
+  constructor(field: string, decoder: Decoder<a>) {
     super();
     this.decoder = decoder;
-    this.field = fieldS;
+    this.field = field;
   }
 
   public run(valueObject: unknown): Decoded<a> {
