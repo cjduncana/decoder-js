@@ -1,11 +1,12 @@
 /* tslint:disable:no-console */
 
-import axios from 'axios';
 import Decoder, { Decoded } from 'decoder-js';
+import fetch from 'node-fetch';
 import Cause from './Cause';
 
-axios.get('https://data.cdc.gov/api/views/6rkc-nb2q/rows.json')
-  .then(({ data }) => {
+fetch('https://data.cdc.gov/api/views/6rkc-nb2q/rows.json')
+  .then((response) => response.json())
+  .then((data) => {
     const causesResult: Decoded<Cause[]> = decoder.run(data);
 
     causesResult.fold(

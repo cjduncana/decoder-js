@@ -9,9 +9,10 @@
     "build": "tsc"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "@types/node-fetch": "^2.3.4",
     "decoder-js": "^1.0.0",
     "fp-ts": "^1.9.0",
+    "node-fetch": "^2.6.0",
     "typescript": "^3.1.1"
   }
 }
